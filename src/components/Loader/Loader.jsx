@@ -1,4 +1,5 @@
 import { CirclesWithBar } from 'react-loader-spinner';
+import PropTypes from 'prop-types';
 import css from '../styles.module.css';
 
 export const Loader = ({ loader }) => {
@@ -19,3 +20,7 @@ export const Loader = ({ loader }) => {
     </div>
   );
 };
+
+Loader.propTypes = {
+  loader: PropTypes.bool.isRequired,
+}

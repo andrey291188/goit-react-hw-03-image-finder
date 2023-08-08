@@ -4,6 +4,7 @@ import { Button } from '../Button/Button';
 import { request } from 'components/Api/api';
 import { Loader } from 'components/Loader/Loader';
 import Modal from 'components/Modal/Modal';
+import PropTypes from 'prop-types';
 import css from '../styles.module.css';
 
 class ImageGallery extends Component {
@@ -26,18 +27,38 @@ class ImageGallery extends Component {
       this.setState({ page: 1 });
       this.setState({ loader: true });
       request(nextTextRequest, 1)
-        .then(res => res.json())
-        .then(data => this.setState({ dataApi: data.hits }))
+        .then(res => {
+          if (!res.ok) {
+            return Promise.reject(new Error());
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (!data.hits.length) {
+            return alert(`Request with this name ${nextTextRequest} not found`);
+          }
+          this.setState({ dataApi: data.hits });
+        })
+        .catch(error => alert('Sorry something went wrong, try again'))
         .finally(() => this.setState({ loader: false, btnVisible: true }));
     } else if (prevPage !== nextPage && prevPage < nextPage) {
       this.setState({ loader: true, btnVisible: false });
       request(nextTextRequest, nextPage)
-        .then(res => res.json())
-        .then(data =>
+        .then(res => {
+          if (!res.ok) {
+            return Promise.reject(new Error());
+          }
+          return res.json();
+        })
+        .then(data => {
+          if (!data.hits.length) {
+            return alert('Sorry no more pictures');
+          }
           this.setState(prevState => ({
             dataApi: [...prevState.dataApi, ...data.hits],
-          }))
-        )
+          }));
+        })
+        .catch(error => alert('Sorry something went wrong, try again'))
         .finally(() => this.setState({ loader: false, btnVisible: true }));
     }
   }
@@ -68,10 +89,10 @@ class ImageGallery extends Component {
             <ul className={css.ImageGallery}>
               <ImageGalleryItem data={dataApi} onClick={this.handleDataIndex} />
             </ul>
-            {btnVisible && <Button onClick={this.handleIncrement} />} 
+            {btnVisible && <Button onClick={this.handleIncrement} />}
           </>
         )}
-        <Loader loader={loader}/>
+        <Loader loader={loader} />
         {showModal && (
           <Modal
             imgModal={dataApi[dataApiIndex]}
@@ -84,3 +105,7 @@ class ImageGallery extends Component {
 }
 
 export default ImageGallery;
+
+ImageGallery.propTypes = {
+  text: PropTypes.string.isRequired,
+}

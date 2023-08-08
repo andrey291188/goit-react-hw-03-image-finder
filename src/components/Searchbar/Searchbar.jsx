@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import PropTypes from 'prop-types';
 import css from '../styles.module.css';
 
 class Searchbar extends Component {
@@ -12,6 +13,9 @@ class Searchbar extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
+    if (this.state.textSearchForm.trim() === ""){
+      return alert("Enter your request")
+    }
     this.props.onSubmit(this.state.textSearchForm);
     this.setState({ textSearchForm: '' });
   };
@@ -38,3 +42,8 @@ class Searchbar extends Component {
 }
 
 export default Searchbar;
+
+
+Searchbar.propTypes = {
+  onSubmit: PropTypes.func.isRequired
+}
