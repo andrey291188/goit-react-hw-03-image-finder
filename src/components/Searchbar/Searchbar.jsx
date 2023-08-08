@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import { FaSearch } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 import css from '../styles.module.css';
 
@@ -25,7 +26,7 @@ class Searchbar extends Component {
       <header className={css.Searchbar}>
         <form className={css.SearchForm} onSubmit={this.handleSubmit}>
           <button type="submit" className={css.SearchForm_button}>
-            <span className={css.SearchForm_button_label}>Search</span>
+            <span><FaSearch value={{className:"SearchForm_button"}}/></span> 
           </button>
 
           <input
@@ -42,7 +43,6 @@ class Searchbar extends Component {
 }
 
 export default Searchbar;
-
 
 Searchbar.propTypes = {
   onSubmit: PropTypes.func.isRequired
