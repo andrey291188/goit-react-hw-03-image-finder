@@ -11,7 +11,7 @@ import css from './styles.module.css';
 class App extends Component {
   state = {
     textSearch: '',
-    arrayDataImage: [],
+    arrayDataImages: [],
     dataImageIndex: null,
     page: 1,
     prePage: 12,
@@ -35,27 +35,27 @@ class App extends Component {
           return;
         } else if (data.totalHits < prePage) {
           this.setState({
-            arrayDataImage: [...data.hits],
+            arrayDataImages: [...data.hits],
             btnVisible: false,
             loader: false,
           });
-        } else if (!this.state.arrayDataImage.length) {
+        } else if (!this.state.arrayDataImages.length) {
           this.setState({
-            arrayDataImage: [...data.hits],
+            arrayDataImages: [...data.hits],
             btnVisible: true,
             loader: false,
           });
         } else {
-          if (this.state.arrayDataImage.length + prePage >= data.totalHits) {
+          if (this.state.arrayDataImages.length + prePage >= data.totalHits) {
             this.setState({
-              arrayDataImage: [...prevState.arrayDataImage, ...data.hits],
+              arrayDataImages: [...prevState.arrayDataImages, ...data.hits],
               btnVisible: false,
               loader: false,
             });
             return;
           }
           this.setState({
-            arrayDataImage: [...prevState.arrayDataImage, ...data.hits],
+            arrayDataImages: [...prevState.arrayDataImages, ...data.hits],
             btnVisible: true,
             loader: false,
           });
@@ -68,7 +68,7 @@ class App extends Component {
   }
 
   handleSearchSubmit = text => {
-    this.setState({ textSearch: text, page: 1, arrayDataImage: [] });
+    this.setState({ textSearch: text, page: 1, arrayDataImages: [] });
   };
 
   handleIncrement = () => {
@@ -89,19 +89,19 @@ class App extends Component {
   };
 
   render() {
-    const { arrayDataImage, loader, showModal, dataImageIndex, btnVisible } =
+    const { arrayDataImages, loader, showModal, dataImageIndex, btnVisible } =
       this.state;
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.handleSearchSubmit} />
-        {arrayDataImage && (
-          <ImageGallery data={arrayDataImage} onClick={this.handleDataIndex} />
+        {arrayDataImages && (
+          <ImageGallery data={arrayDataImages} onClick={this.handleDataIndex} />
         )}
         {btnVisible && <Button onClick={this.handleIncrement} />}
         {loader && <Loader />}
         {showModal && (
           <Modal
-            imgModal={arrayDataImage[dataImageIndex]}
+            imgModal={arrayDataImages[dataImageIndex]}
             toggleModal={this.toggleModal}
           />
         )}
