@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types';
 import css from '../styles.module.css';
 
-export const ImageGalleryItem = ({ data, onClick }) => {
-
-  return data.map(({ id, webformatURL, tags }, index) => (
-    <li className={css.ImageGalleryItem} key={id}>
+export const ImageGalleryItem = ({
+  webformatURL,
+  tags,
+  onClick,
+  index,
+}) => {
+  return (
+    <li className={css.ImageGalleryItem}>
       <img
         src={webformatURL}
         alt={tags}
@@ -12,16 +16,12 @@ export const ImageGalleryItem = ({ data, onClick }) => {
         onClick={() => onClick(index)}
       />
     </li>
-  ));
+  );
 };
 
 ImageGalleryItem.propTypes = {
-  data: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      webformatURL: PropTypes.string.isRequired,
-      tags: PropTypes.string.isRequired,
-    })
-  ),
+  webformatURL: PropTypes.string.isRequired,
+  tags: PropTypes.string.isRequired,
+  index: PropTypes.number.isRequired,
   onClick: PropTypes.func.isRequired,
 };

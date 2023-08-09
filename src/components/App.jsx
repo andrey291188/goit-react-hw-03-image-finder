@@ -14,58 +14,36 @@ class App extends Component {
     arrayDataImages: [],
     dataImageIndex: null,
     page: 1,
-    prePage: 12,
     loader: false,
     showModal: false,
-    btnVisible: false,
+    btnVisible: null,
   };
 
-  async componentDidUpdate(_, prevState) {
-    const { page: nextPage, textSearch: nextTextRequest, prePage } = this.state;
+  componentDidUpdate(_, prevState) {
+    const { page: nextPage, textSearch: nextTextRequest } = this.state;
     const { textSearch: prevTextRequest, page: prevPage } = prevState;
-    
-    try {
-      if (prevTextRequest !== nextTextRequest || prevPage !== nextPage) {
-        this.setState({ loader: true, btnVisible: false });
-        const { data } = await request(nextTextRequest, nextPage, prePage);
-
-        if (!data.hits.length) {
-          alert(`Request with this name ${nextTextRequest} not found`);
-          this.setState({ btnVisible: false, loader: false });
-          return;
-        } else if (data.totalHits < prePage) {
-          this.setState({
-            arrayDataImages: [...data.hits],
-            btnVisible: false,
-            loader: false,
-          });
-        } else if (!this.state.arrayDataImages.length) {
-          this.setState({
-            arrayDataImages: [...data.hits],
-            btnVisible: true,
-            loader: false,
-          });
-        } else {
-          if (this.state.arrayDataImages.length + prePage >= data.totalHits) {
-            this.setState({
-              arrayDataImages: [...prevState.arrayDataImages, ...data.hits],
-              btnVisible: false,
-              loader: false,
-            });
-            return;
-          }
-          this.setState({
-            arrayDataImages: [...prevState.arrayDataImages, ...data.hits],
-            btnVisible: true,
-            loader: false,
-          });
-        }
-      }
-    } catch (error) {
-      alert('Sorry something went wrong, try again');
-      this.setState({ loader: false });
+    if (prevTextRequest !== nextTextRequest || prevPage !== nextPage) {
+      this.getRequest(nextTextRequest, nextPage);
     }
   }
+
+  getRequest = async (queryText, page) => {
+    try {
+      this.setState({ loader: true });
+      const response = await request(queryText, page);
+      if (!response.hits.length) {
+        return alert(`Request with this name ${queryText} not found`);
+      }
+      this.setState(prevState => ({
+        arrayDataImages: [...prevState.arrayDataImages, ...response.hits],
+        btnVisible: response.totalHits,
+      }));
+    } catch (error) {
+      alert('Sorry something went wrong, try again');
+    } finally {
+      this.setState({ loader: false });
+    }
+  };
 
   handleSearchSubmit = text => {
     this.setState({ textSearch: text, page: 1, arrayDataImages: [] });
@@ -91,13 +69,16 @@ class App extends Component {
   render() {
     const { arrayDataImages, loader, showModal, dataImageIndex, btnVisible } =
       this.state;
+    const totalPage = btnVisible / arrayDataImages.length;
     return (
       <div className={css.App}>
         <Searchbar onSubmit={this.handleSearchSubmit} />
         {arrayDataImages && (
           <ImageGallery data={arrayDataImages} onClick={this.handleDataIndex} />
         )}
-        {btnVisible && <Button onClick={this.handleIncrement} />}
+        {totalPage > 1 && !loader && arrayDataImages.length > 0 && (
+          <Button onClick={this.handleIncrement} />
+        )}
         {loader && <Loader />}
         {showModal && (
           <Modal
@@ -114,4 +95,4 @@ export default App;
 
 App.propTypes = {
   text: PropTypes.string,
-}
+};
