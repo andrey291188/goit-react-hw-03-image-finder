@@ -20,12 +20,9 @@ class App extends Component {
     btnVisible: false,
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const prevTextRequest = prevState.textSearch;
-    const nextTextRequest = this.state.textSearch;
-    const prevPage = prevState.page;
-    const nextPage = this.state.page;
-    const prePage = this.state.prePage;
+  async componentDidUpdate(_, prevState) {
+    const { page: nextPage, textSearch: nextTextRequest, prePage } = this.state;
+    const { textSearch: prevTextRequest, page: prevPage } = prevState;
     
     try {
       if (prevTextRequest !== nextTextRequest || prevPage !== nextPage) {
